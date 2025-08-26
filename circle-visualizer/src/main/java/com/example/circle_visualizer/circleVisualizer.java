@@ -103,13 +103,7 @@ public class circleVisualizer extends Activity {
                 public void onFftDataCapture(Visualizer visualizer, byte[] fft,
                                              int samplingRate) {
 
-
-                    // Analyze first 10 bins (low frequency range)
-                    for (int i = 2; i < 100; i+=2) {
-                        float re = fft[2 * i];
-                        float im = fft[2 * i + 1];
-                        bassMagnitude += Math.hypot(re, im);
-                    }
+ }
 
 
 
@@ -142,6 +136,8 @@ public class circleVisualizer extends Activity {
             angle = 0;
             for (int i = 0; i < 90 ; i++, angle += 4) {
                 int t =Math.abs(bytes[i]) / 2;
+                
+                
 
 
                 Log.d(String.valueOf(
