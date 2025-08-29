@@ -17,8 +17,9 @@ import android.widget.Toast;
 import android.os.Debug;
 import android.util.Log;
 import android.graphics.Path;
+import android.util.AttributeSet;
 
-public  class circle_visualizer extends View {
+public  class circleVisualizer extends View {
         private int bt;
         private Paint pnt;
         private byte[] bytes;
@@ -26,7 +27,7 @@ public  class circle_visualizer extends View {
         private float angle;
         private float length;
         double bassMagnitude = 0;
-        public circle_visualizer(Context ctx, MediaPlayer player) {
+        public circleVisualizer(Context ctx, MediaPlayer player) {
             super(ctx);
 
 
@@ -42,11 +43,11 @@ public  class circle_visualizer extends View {
             // vl.addUpdateListener(anim -> invalidate());
             //vl.start();
         }
-    public circle_visualizer(Context ctx, AttributeSet attr) {
+    public circleVisualizer(Context ctx, AttributeSet attr) {
         
         super(ctx,attr);
     }
-    public circle_visualizer(Context ctx, AttributeSet attr, int def) {
+    public circleVisualizer(Context ctx, AttributeSet attr, int def) {
         super(ctx, attr,def);
         }
     
