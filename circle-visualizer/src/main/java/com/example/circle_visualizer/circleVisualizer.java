@@ -18,46 +18,7 @@ import android.os.Debug;
 import android.util.Log;
 import android.graphics.Path;
 
-
-public class circleVisualizer extends Activity {
-
-    private MediaPlayer mediaPlayer;
-    private MyView myView;
-
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // ask runtime RECORD_AUDIO permission
-        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(
-                    new String[]{Manifest.permission.RECORD_AUDIO}, 123);
-        }
-
-        mediaPlayer = MediaPlayer.create(this, R.raw.abc);
-        mediaPlayer.setLooping(true);
-
-        myView = new MyView(this, mediaPlayer);
-        setContentView(myView);
-
-        mediaPlayer.start();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-        }
-        if (myView != null) {
-            myView.release();
-        }
-    }
-
-    public static class MyView extends View {
+public  class circle_visualizer extends View {
         private int bt;
         private Paint pnt;
         private byte[] bytes;
@@ -65,9 +26,8 @@ public class circleVisualizer extends Activity {
         private float angle;
         private float length;
         double bassMagnitude = 0;
-        public MyView(Context ctx, MediaPlayer player) {
+        public circle_visualizer(Context ctx, MediaPlayer player) {
             super(ctx);
-
 
 
             // attach visualizer to MediaPlayer
@@ -82,7 +42,14 @@ public class circleVisualizer extends Activity {
             // vl.addUpdateListener(anim -> invalidate());
             //vl.start();
         }
-
+    public circle_visualizer(Context ctx, AttributeSet attr) {
+        
+        super(ctx,attr);
+    }
+    public circle_visualizer(Context ctx, AttributeSet attr, int def) {
+        super(ctx, attr,def);
+        }
+    
         private void setPlayer(int audioSessionId) {
             visualizer = new Visualizer(audioSessionId);
             visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
@@ -103,7 +70,13 @@ public class circleVisualizer extends Activity {
                 public void onFftDataCapture(Visualizer visualizer, byte[] fft,
                                              int samplingRate) {
 
- }
+
+                    // Analyze first 10 bins (low frequency range)
+                    for (int i = 2; i < 100; i+=2) {
+                        float re = fft[2 * i];
+                        float im = fft[2 * i + 1];
+                        bassMagnitude += Math.hypot(re, im);
+                    }
 
 
 
@@ -125,42 +98,52 @@ public class circleVisualizer extends Activity {
             super.onDraw(canvas);
 
             float cx = getWidth() / 2f;
-            float cy = getHeight() / 2f;
-            float x1 = 0,y1 = 0,x2 = 0,y2 = 0;
-            float radius = 200;
+            float cy = 65f;
+            float x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+            float radius = 40;
 
             // base circle
             // canvas.drawCircle(cx, cy, radius, pnt);
 
             if (bytes == null) return; // nothing yet
             angle = 0;
-            for (int i = 0; i < 90 ; i++, angle += 4) {
-                int t =Math.abs(bytes[i]) / 2;
-                
-                
+            for (int i = 0; i < 40; i++, angle += 9) {
+                int t = Math.abs(bytes[i]) / 5;
+                Log.d(String.valueOf(t),"value");
 
+                // Add +20 only for indices 0–20
+                if (i == 38 || i == 39 || i == 21 || i == 22) {
+                    if (t>20) {
+                        t += 50;
+                    }
 
-                Log.d(String.valueOf(
-                        t),"value");
+                }
+
+                Log.d("t_value", String.valueOf(t));
+
                 x1 = (float) (cx + radius * Math.cos(Math.toRadians(angle)));
                 y1 = (float) (cy + radius * Math.sin(Math.toRadians(angle)));
                 x2 = (float) (cx + (radius + t) * Math.cos(Math.toRadians(angle)));
-                y2 = (float) (cy + (radius +t) * Math.sin(Math.toRadians(angle)));
-
+                y2 = (float) (cy + (radius + t) * Math.sin(Math.toRadians(angle)));
 
                 invalidate();
 
 
-                canvas.drawLine(x1,y1,x2,y2,new Paint(){{
-                    setColor(Color.GRAY);
-                    setStrokeWidth(5);
+
+
+
+
+            canvas.drawLine(x1,y1,x2,y2,new Paint(){{
+                    setColor(Color.BLACK);
+                    setStrokeWidth(2);
                     setStrokeCap(Paint.Cap.ROUND);
                     setStyle(Paint.Style.FILL);
 
+
                 }});
 
-                canvas.drawCircle(x2,y2,6,new Paint(Paint.ANTI_ALIAS_FLAG){{
-                    setColor(Color.BLACK);
+                canvas.drawCircle(x2,y2,2,new Paint(Paint.ANTI_ALIAS_FLAG){{
+                    setColor(Color.WHITE);
                     setStyle(Paint.Style.FILL);
                 }});
 
@@ -173,4 +156,3 @@ public class circleVisualizer extends Activity {
             }
         }
     }
-}
